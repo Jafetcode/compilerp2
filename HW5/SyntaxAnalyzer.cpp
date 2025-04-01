@@ -15,7 +15,7 @@ int main() {
     map<string, string> symboltable;
 
 }
-
+//Method written as a group
 SyntaxAnalyzer::SyntaxAnalyzer(istream &infile) {
     string wordPair;
     while (getline(infile, wordPair)) {
@@ -26,7 +26,7 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream &infile) {
         tokens.push_back(token);
     }
 }
-
+//Method written as a group
 bool SyntaxAnalyzer::parse() {
     if (tokitr != tokens.end() && *tokitr  == "t_main") {
         tokitr++;lexitr++;
@@ -50,8 +50,6 @@ bool SyntaxAnalyzer::parse() {
 
 
 bool SyntaxAnalyzer::whilestmt() {
-    if (tokitr != lexemes.end() && *tokitr == "t_while") {
-        ++tokitr;++lexitr;
         if (tokitr != lexemes.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
             if (tokitr != lexemes.end() && expr()) {
@@ -83,9 +81,6 @@ bool SyntaxAnalyzer::whilestmt() {
         } else {
             cout << "error in source code" << endl;
         }
-    } else {
-        cout << "error in source code" << endl;
-    }
     return false;
 }
 
@@ -95,13 +90,18 @@ bool SyntaxAnalyzer::inputstmt() {
         if (tokitr != lexemes.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
             if (tokitr != lexemes.end() && *tokitr == "t_id") {
-                ++tokitr;++lexitr;
-                if (tokitr != lexemes.end() && *tokitr == "s_rparen") {
+                if (symboltable.find(*lexitr)) {
+
+                } else {
                     ++tokitr;++lexitr;
-                    if (tokitr == lexemes.end()) {
-                        return true;
+                    if (tokitr != lexemes.end() && *tokitr == "s_rparen") {
+                        ++tokitr;++lexitr;
+                        if (tokitr == lexemes.end()) {
+                            return true;
+                        }
                     }
                 }
+
             }
         }
     }
@@ -109,8 +109,6 @@ bool SyntaxAnalyzer::inputstmt() {
 }
 
 bool SyntaxAnalyzer::outputstmt() {
-    if (tokitr != lexemes.end() && *tokitr == "t_output") {
-        ++tokitr;++lexitr;
         if (tokitr != lexemes.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
             if (tokitr != lexemes.end() && expr()) {
@@ -133,7 +131,6 @@ bool SyntaxAnalyzer::outputstmt() {
                 }
             }
         }
-    }
     return false;
 }
 
@@ -165,8 +162,7 @@ bool SyntaxAnalyzer::simpleexpr() {
     return false;
     }
 
-bool logicop(vector<string> lexemes, vector<string> tokens, vector<string>::iterator lexitr,
-             vector<string>::iterator tokitr) {
+bool SyntaxAnalyzer::logicop(){
     if (tokitr != lexemes.end() && *tokitr == "t_and") {
         ++tokitr;
         ++lexitr;
