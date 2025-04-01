@@ -187,3 +187,111 @@ bool logicop(vector<string> lexemes, vector<string> tokens, vector<string>::iter
         return false;
     }
 }
+
+// jacob section
+bool SyntaxAnalyzer::vdecassign() {
+    // TYPE id = EXPR;
+    if (tokitr != tokens.end()) {
+        if (*tokitr == "t_integer" || *tokitr == "t_string") {
+            string test = *lexitr;
+            ++tokitr; ++lexitr;
+            if (tokitr != tokens.end() && *tokitr == "t_id") {
+                // makes only one variable be in the list at once.
+                if (!symboltable.contains(*lexitr)) {
+                    symboltable.insert(make_pair(*lexitr, test));
+                }
+                ++tokitr; ++lexitr;
+
+                if (tokitr != tokens.end() && *tokitr == "s_assign") {
+                    ++tokitr; ++lexitr;
+                    if (expr()) { // expr should move up after it is done
+                        if (tokitr != tokens.end() && *tokitr == "s_semi") {
+                            ++tokitr; ++lexitr;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+} // jacob
+bool SyntaxAnalyzer::ifstmt() {
+    // if (EXPR) { STMTLIST } ELSEPART
+    if (tokitr != tokens.end()) {
+        if (*tokitr == "t_if") {
+            ++tokitr; ++lexitr;
+            if (tokitr != tokens.end() && *tokitr == "s_lparen") {
+                ++tokitr; ++lexitr;
+                if (expr()) {
+                    if (tokitr != tokens.end() && *tokitr == "s_rparen") {
+                        ++tokitr; ++lexitr;
+                        if (tokitr != tokens.end() && *tokitr == "s_lbrace") {
+                            ++tokitr; ++lexitr;
+                            if (stmtlist()) {
+                                if (tokitr != tokens.end() && *tokitr == "s_rbrace") {
+                                    ++tokitr; ++lexitr;
+                                    if (elsepart()) {
+                                        ++tokitr; ++lexitr;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+} // jacob
+bool SyntaxAnalyzer::elsepart() {
+    // else { STMTLIST } | null
+    if (tokitr != tokens.end() && *tokitr == "t_else") {
+        ++tokitr; ++lexitr;
+        if (tokitr != tokens.end() && *tokitr == "s_lbrace") {
+            ++tokitr; ++lexitr;
+            if (stmtlist()) {
+                if (tokitr != tokens.end() && *tokitr == "s_rbrace") {
+                    ++tokitr; ++lexitr;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    return true;
+} // jacob
+bool SyntaxAnalyzer::assignstmt() {
+    // id = EXPR;
+    if (tokitr != tokens.end()) {
+        if (*tokitr == "t_id" && symboltable.contains(*lexitr)) {
+            if (tokitr != tokens.end() && *tokitr == "s_assign") {
+                ++tokitr; ++lexitr;
+                if (expr()) {
+                    if (tokitr != tokens.end() && *tokitr == "s_semi") {
+                        ++tokitr; ++lexitr;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+} // jacob
+bool SyntaxAnalyzer::relop() {
+    if (tokitr != tokens.end()) {
+        if (*tokitr == "s_lt" || *tokitr == "s_gt" || *tokitr == "s_eq" ||*tokitr == "s_ne") {
+            ++tokitr; ++lexitr;
+            return true;
+        }
+    }
+    return false;
+} // jacob
+bool SyntaxAnalyzer::typecheck(const string& type1) {
+    if (type1 == symboltable[*lexitr]) {
+        return true;
+    }
+    return false;
+} // jacob
+// end of jacob section
