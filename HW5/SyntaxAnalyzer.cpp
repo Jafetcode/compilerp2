@@ -12,10 +12,13 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream &infile) {
     while (getline(infile, wordPair)) {
         unsigned int pos = wordPair.find(" : ");
         string token = wordPair.substr(0, pos);
-        string lex = wordPair.substr(pos + 1, wordPair.size());
+        string lex = wordPair.substr(pos + 3, wordPair.size());
         lexemes.push_back(lex);
         tokens.push_back(token);
+
     }
+    tokitr = tokens.begin();
+    lexitr = lexemes.begin();
 }
 // Made by Group
 bool SyntaxAnalyzer::parse() {
@@ -24,6 +27,8 @@ bool SyntaxAnalyzer::parse() {
         if (tokitr!=tokens.end() && *tokitr  == "s_lbrace") {
             tokitr++; lexitr++;
             if (stmtlist()) {
+                tokitr--; lexitr--;
+                //cout << *tokitr << " : " << *lexitr << endl;
                 if (tokitr!=tokens.end() && *tokitr  == "s_rbrace") {
                     tokitr++; lexitr++;
                     if (tokitr == tokens.end()) {
@@ -141,7 +146,7 @@ bool SyntaxAnalyzer::relop() {
     return false;
 }
 
-// Made by Abraham
+// Made by Jafet
 bool SyntaxAnalyzer::whilestmt() {
         if (tokitr != tokens.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
@@ -176,31 +181,29 @@ bool SyntaxAnalyzer::whilestmt() {
         }
     return false;
 }
-// Made by Abraham
+// Made by Jafet
 bool SyntaxAnalyzer::inputstmt() {
-    if (tokitr != tokens.end() && *tokitr == "t_input") {
+    if (tokitr != tokens.end() && *tokitr == "s_lparen") {
         ++tokitr;++lexitr;
-        if (tokitr != tokens.end() && *tokitr == "s_lparen") {
-            ++tokitr;++lexitr;
-            if (tokitr != tokens.end() && *tokitr == "t_id") {
-                if (symboltable.contains(*lexitr)) {
+        if (tokitr != tokens.end() && *tokitr == "t_id") {
+            if (symboltable.contains(*lexitr)) {
 
-                } else {
+            } else {
+                ++tokitr;++lexitr;
+                if (tokitr != tokens.end() && *tokitr == "s_rparen") {
                     ++tokitr;++lexitr;
-                    if (tokitr != tokens.end() && *tokitr == "s_rparen") {
-                        ++tokitr;++lexitr;
-                        if (tokitr == tokens.end()) {
-                            return true;
-                        }
+                    cout << "error in source code" << endl;
+                    if (tokitr == tokens.end()) {
+                        return true;
                     }
                 }
-
             }
+
         }
     }
     return false;
 }
-// Made by Abraham
+// Made by Jafet
 bool SyntaxAnalyzer::outputstmt() {
         if (tokitr != tokens.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
@@ -226,7 +229,7 @@ bool SyntaxAnalyzer::outputstmt() {
         }
     return false;
 }
-
+// made by Jafet
 bool SyntaxAnalyzer::simpleexpr() {
     if (tokitr != tokens.end() && term()) {
         ++tokitr;++lexitr;
@@ -255,6 +258,7 @@ bool SyntaxAnalyzer::simpleexpr() {
     return false;
     }
 
+// made by Jafet
 bool SyntaxAnalyzer::logicop(){
     if (tokitr != tokens.end() && *tokitr == "t_and") {
         ++tokitr;
@@ -276,3 +280,121 @@ bool SyntaxAnalyzer::logicop(){
         return false;
     }
 }
+
+// Start of Abraham's Section
+bool SyntaxAnalyzer::stmtlist() { // STMTLIST → STMT [STMT]m | Ø
+    int result = stmt();
+    while (result != -1) {
+        result = stmt();
+
+    }
+    return true;
+}
+int SyntaxAnalyzer::stmt() {
+    if (tokitr != lexemes.end() && *tokitr == "t_if") {
+        tokitr++; lexitr++;
+        if (!ifstmt()){ //check if it is a boolean since wwe are returning integer
+            //checking if they are true
+            return 0; //0 means this statement isn't valid/does not apply here
+        } else {
+            return 1; //1 means valid
+        }
+    }
+    if (tokitr != tokens.end() && *tokitr == "t_while") {
+        ++tokitr; ++lexitr;
+        if (!whilestmt()) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+    if (tokitr != tokens.end() && *tokitr == "t_assign") {
+        tokitr++; lexitr++; //start with an id
+        if (!assignstmt()) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+
+    }
+    if (tokitr != tokens.end() && *tokitr == "t_input") {
+        tokitr++; lexitr++;
+        if (!inputstmt()) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+    if (tokitr != tokens.end() && *tokitr == "t_output") {
+        tokitr++; lexitr++;
+        if (!outputstmt()) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+
+    return -1; // no staements exist, means empty set
+}
+
+bool SyntaxAnalyzer::term() {
+    // TERM -> number | text | id | (EXPR)
+    if (tokitr != tokens.end()) {
+        //this checks if token is num, text, or id
+        if (*tokitr == "t_number" || *tokitr == "t_text" || *tokitr == "t_id") {
+            ++tokitr; ++lexitr;
+            return true;
+        }
+        //this will check for EXPR
+        else if (*tokitr == "s_lparen") {
+            ++tokitr; ++lexitr; //this will eat '(' (i think lol)
+            if (expr()) {
+                if (expr()) {
+                    if (tokitr != tokens.end() && *tokitr == "s_rparen") {
+                        ++tokitr; ++lexitr; // should eat ')'
+                        return true;
+                    } else {
+                        cout << "error in source code" << endl;
+                        cout << "missing ')' in term" << endl;
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+bool SyntaxAnalyzer::arithop() { // ARITHOP -> s_plus | s_minus | s_mult | s_div | s_mod
+    if (tokitr != tokens.end()) {
+        if (*tokitr == "s_plus" || *tokitr == "s_minus" || *tokitr == "s_div") {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SyntaxAnalyzer::expr() { //EXPR -> SIMPLEEXPR  [LOGICOP  SIMPLEEXPR]1
+    if (simpleexpr()) {
+        if (tokitr != tokens.end()) {
+            if (*tokitr == "t_and" || *tokitr == "t_or") {
+                ++tokitr; ++lexitr;
+                if (!simpleexpr()) {
+                    cout << "error in source code" << endl;
+                    cout << "simple expression after logical op is needed" << endl;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    return false;
+}
+// End of Abraham's Section
+
