@@ -40,8 +40,8 @@ bool SyntaxAnalyzer::parse() {
             }
         }
     }
-    tokitr--;
-    lexitr--;
+    --tokitr;
+    --lexitr;
     cout << *tokitr << " " << *lexitr << endl;
     return false;
 }
@@ -61,6 +61,7 @@ bool SyntaxAnalyzer::vdecassign(string test) {
                     ++tokitr;
                     ++lexitr;
                     if (expr()) {
+                        cout << "tset" << endl;
                         if (tokitr != tokens.end() && *tokitr == "s_semi") {
                             cout << "tset" << endl;
                             ++tokitr;
@@ -168,8 +169,6 @@ bool SyntaxAnalyzer::whilestmt() {
         ++tokitr;
         ++lexitr;
         if (tokitr != tokens.end() && expr()) {
-            ++tokitr;
-            ++lexitr;
             if (tokitr != tokens.end() && *tokitr == "s_rparen") {
                 ++tokitr;
                 ++lexitr;
@@ -177,8 +176,6 @@ bool SyntaxAnalyzer::whilestmt() {
                     ++tokitr;
                     ++lexitr;
                     if (tokitr != tokens.end() && stmtlist()) {
-                        ++tokitr;
-                        ++lexitr;
                         if (tokitr != tokens.end() && *tokitr == "s_rbrace") {
                             ++tokitr;
                             ++lexitr;
@@ -197,15 +194,14 @@ bool SyntaxAnalyzer::inputstmt() {
         ++tokitr;
         ++lexitr;
         if (tokitr != tokens.end() && *tokitr == "t_id") {
-            if (symboltable.contains(*tokitr)) {
+            if (symboltable.contains(*lexitr)) {
+                cout << "te:::::st" << endl;
                 ++tokitr;
                 ++lexitr;
                 if (tokitr != tokens.end() && *tokitr == "s_rparen") {
                     ++tokitr;
                     ++lexitr;
-                    if (tokitr == tokens.end()) {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
@@ -227,8 +223,6 @@ bool SyntaxAnalyzer::outputstmt() {
             }
         }
         else if (tokitr != tokens.end() && expr()) {
-            ++tokitr;
-            ++lexitr;
             if (tokitr != tokens.end() && *tokitr == "s_rparen") {
                 ++tokitr;
                 ++lexitr;
@@ -242,22 +236,12 @@ bool SyntaxAnalyzer::outputstmt() {
 
 bool SyntaxAnalyzer::simpleexpr() {
     if (tokitr != tokens.end() && term()) {
-        ++tokitr;
-        ++lexitr;
         if (arithop()) {
-            ++tokitr;
-            ++lexitr;
             if (tokitr != tokens.end() && term()) {
-                ++tokitr;
-                ++lexitr;
                 return true;
             }
         } else if (relop()) {
-            ++tokitr;
-            ++lexitr;
             if (tokitr != tokens.end() && term()) {
-                ++tokitr;
-                ++lexitr;
                 return true;
             }
         } else {
@@ -381,8 +365,6 @@ bool SyntaxAnalyzer::term() {
                     ++lexitr; // should eat ')'
                     return true;
                 } else {
-                    cout << "error in source code" << endl;
-                    cout << "missing ')' in term" << endl;
                     return false;
                 }
             } else {
@@ -397,6 +379,8 @@ bool SyntaxAnalyzer::arithop() {
     // ARITHOP -> s_plus | s_minus | s_mult | s_div | s_mod
     if (tokitr != tokens.end()) {
         if (*tokitr == "s_plus" || *tokitr == "s_minus" || *tokitr == "s_div") {
+            ++tokitr;
+            ++lexitr;
             return true;
         }
     }
@@ -411,8 +395,6 @@ bool SyntaxAnalyzer::expr() {
                 ++tokitr;
                 ++lexitr;
                 if (!simpleexpr()) {
-                    cout << "error in source code" << endl;
-                    cout << "simple expression after logical op is needed" << endl;
                     return false;
                 }
             }
