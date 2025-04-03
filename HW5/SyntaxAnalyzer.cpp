@@ -21,10 +21,13 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream &infile) {
     while (getline(infile, wordPair)) {
         unsigned int pos = wordPair.find(" : ");
         string token = wordPair.substr(0, pos);
-        string lex = wordPair.substr(pos + 1, wordPair.size());
+        string lex = wordPair.substr(pos + 3, wordPair.size());
         lexemes.push_back(lex);
         tokens.push_back(token);
+
     }
+    tokitr = tokens.begin();
+    lexitr = lexemes.begin();
 }
 //Method written as a group
 bool SyntaxAnalyzer::parse() {
@@ -90,9 +93,7 @@ bool SyntaxAnalyzer::inputstmt() {
         if (tokitr != lexemes.end() && *tokitr == "s_lparen") {
             ++tokitr;++lexitr;
             if (tokitr != lexemes.end() && *tokitr == "t_id") {
-                if (symboltable.find(*lexitr)) {
-
-                } else {
+                if (symboltable.contains(*tokitr)) {
                     ++tokitr;++lexitr;
                     if (tokitr != lexemes.end() && *tokitr == "s_rparen") {
                         ++tokitr;++lexitr;
@@ -101,7 +102,6 @@ bool SyntaxAnalyzer::inputstmt() {
                         }
                     }
                 }
-
             }
         }
     }
