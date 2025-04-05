@@ -1,4 +1,4 @@
-// Created by jacob on 3/28/2025.
+// Created by jacob, jafet, abraham
 //
 
 #include "SyntaxAnalyzer.h"
@@ -40,8 +40,6 @@ bool SyntaxAnalyzer::parse() {
             }
         }
     }
-    --tokitr;
-    --lexitr;
     cout << *tokitr << " " << *lexitr << endl;
     return false;
 }
@@ -134,16 +132,14 @@ bool SyntaxAnalyzer::elsepart() {
 bool SyntaxAnalyzer::assignstmt() {
     // id = EXPR;
     if (tokitr != tokens.end()) {
-        if (*tokitr == "t_id" && symboltable.contains(*lexitr)) {
-            if (tokitr != tokens.end() && *tokitr == "s_assign") {
-                ++tokitr;
-                ++lexitr;
-                if (expr()) {
-                    if (tokitr != tokens.end() && *tokitr == "s_semi") {
-                        ++tokitr;
-                        ++lexitr;
-                        return true;
-                    }
+        if (tokitr != tokens.end() && *tokitr == "s_assign") {
+            ++tokitr;
+            ++lexitr;
+            if (expr()) {
+                if (tokitr != tokens.end() && *tokitr == "s_semi") {
+                    ++tokitr;
+                    ++lexitr;
+                    return true;
                 }
             }
         }
@@ -310,7 +306,7 @@ int SyntaxAnalyzer::stmt() {
             return 1;
         }
     }
-    if (tokitr != tokens.end() && *tokitr == "t_assign") {
+    if (tokitr != tokens.end() && *tokitr == "t_id"  && symboltable.contains(*lexitr)) {
         tokitr++;
         lexitr++; //start with an id
         if (!assignstmt()) {
