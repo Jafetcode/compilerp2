@@ -1,5 +1,5 @@
 //
-// Created by jacob, jafet, abraham.
+// Created by jacob, jafet, abraham
 //
 
 #ifndef SYNTAXANALYZER_H
@@ -21,7 +21,7 @@ private:
     map<string, string> symboltable; // add var declearation to this
 
     // other private methods
-    bool vdecassign(string test); // jacob
+    bool vdecassign(const string& type); // jacob
     bool stmtlist(); // abraham
     int stmt(); // abraham
     bool ifstmt(); // jacob
@@ -50,5 +50,4 @@ public:
     // that caused the error.
     // If no error, vectors contain syntactically correct source code
 };
-
 #endif //SYNTAXANALYZER_H
