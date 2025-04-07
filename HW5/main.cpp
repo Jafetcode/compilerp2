@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-
 #include "SyntaxAnalyzer.h"
 
 int main() {
