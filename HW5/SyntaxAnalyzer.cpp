@@ -50,10 +50,8 @@ bool SyntaxAnalyzer::parse() {
 
 // Made by Jacob
 bool SyntaxAnalyzer::vdecassign(const string &type) {
-    // TYPE id = EXPR;
     if (tokitr != tokens.end()) {
         if (*tokitr == "t_id") {
-            // makes only one variable be in the list at once.
             if (!symboltable.contains(*lexitr)) {
                 symboltable.insert(make_pair(*lexitr, type));
                 ++tokitr;
@@ -77,7 +75,6 @@ bool SyntaxAnalyzer::vdecassign(const string &type) {
 
 // Made by Jacob
 bool SyntaxAnalyzer::ifstmt() {
-    // if (EXPR) { STMTLIST } ELSEPART
     if (tokitr != tokens.end()) {
         if (tokitr != tokens.end() && *tokitr == "s_lparen") {
             ++tokitr;
@@ -108,7 +105,6 @@ bool SyntaxAnalyzer::ifstmt() {
 
 // Made by Jacob
 bool SyntaxAnalyzer::elsepart() {
-    // else { STMTLIST } | null
     if (tokitr != tokens.end() && *tokitr == "t_else") {
         ++tokitr;
         ++lexitr;
@@ -130,7 +126,6 @@ bool SyntaxAnalyzer::elsepart() {
 
 // Made by Jacob
 bool SyntaxAnalyzer::assignstmt() {
-    // id = EXPR;
     if (tokitr != tokens.end()) {
         if (tokitr != tokens.end() && *tokitr == "s_assign") {
             ++tokitr;
@@ -265,7 +260,6 @@ bool SyntaxAnalyzer::logicop() {
 
 // Made by Abraham
 bool SyntaxAnalyzer::stmtlist() {
-    // STMTLIST → STMT [STMT]m | Ø
     int result = stmt();
     while (result != -1 && result != 0) {
         result = stmt();
@@ -293,11 +287,9 @@ int SyntaxAnalyzer::stmt() {
         ++tokitr;
         ++lexitr;
         if (!ifstmt()) {
-            //check if it is a boolean since we are returning integer
-            //checking if they are true
-            return 0; //0 means this statement isn't valid/does not apply here
+            return 0; 
         } else {
-            return 1; //1 means valid
+            return 1; 
         }
     }
     if (tokitr != tokens.end() && *tokitr == "t_while") {
@@ -325,7 +317,7 @@ int SyntaxAnalyzer::stmt() {
             return 0;
         } else {
             return 1;
-        } // fix  to tokens
+        } 
     }
     if (tokitr != tokens.end() && *tokitr == "t_output") {
         ++tokitr;
@@ -336,14 +328,12 @@ int SyntaxAnalyzer::stmt() {
             return 1;
         }
     }
-    return -1; // no staements exist, means empty set
+    return -1; 
 }
 
 // Made by Abraham
 bool SyntaxAnalyzer::term() {
-    // TERM -> number | text | id | (EXPR)
     if (tokitr != tokens.end()) {
-        //this checks if token is num, text, or id
         if (*tokitr == "t_number" || *tokitr == "t_text") {
             ++tokitr;
             ++lexitr;
@@ -354,14 +344,13 @@ bool SyntaxAnalyzer::term() {
             ++lexitr;
             return true;
         }
-        //this will check for EXPR
         else if (*tokitr == "s_lparen") {
             ++tokitr;
-            ++lexitr; //this will eat '(' (i think lol)
+            ++lexitr; 
             if (expr()) {
                 if (tokitr != tokens.end() && *tokitr == "s_rparen") {
                     ++tokitr;
-                    ++lexitr; // should eat ')'
+                    ++lexitr;
                     return true;
                 } else {
                     return false;
@@ -376,7 +365,6 @@ bool SyntaxAnalyzer::term() {
 
 // Made by Abraham
 bool SyntaxAnalyzer::arithop() {
-    // ARITHOP -> s_plus | s_minus | s_mult | s_div | s_mod
     if (tokitr != tokens.end()) {
         if (*tokitr == "s_plus" || *tokitr == "s_minus" || *tokitr == "s_div") {
             ++tokitr;
@@ -389,7 +377,6 @@ bool SyntaxAnalyzer::arithop() {
 
 // Made by Abraham
 bool SyntaxAnalyzer::expr() {
-    //EXPR -> SIMPLEEXPR  [LOGICOP  SIMPLEEXPR]1
     if (simpleexpr()) {
         if (tokitr != tokens.end()) {
             if (*tokitr == "t_and" || *tokitr == "t_or") {
