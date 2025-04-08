@@ -1,5 +1,5 @@
 //
-// Created by jacob, jafet, abraham
+// The code was created by Jacob, Jafet, Abraham.
 //
 
 #include <iostream>
