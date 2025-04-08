@@ -1,5 +1,5 @@
 //
-// Created by jacob, jafet, abraham
+// The code was created by Jacob, Jafet, Abraham.
 //
 
 #ifndef SYNTAXANALYZER_H
@@ -18,7 +18,7 @@ private:
     vector<string>::iterator tokitr;
     // map of variables and their datatype
     // i.e. sum t_integer
-    map<string, string> symboltable; // add var declearation to this
+    map<string, string> symboltable;
 
     // other private methods
     bool vdecassign(const string& type); // jacob
