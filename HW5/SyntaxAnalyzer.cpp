@@ -1,9 +1,14 @@
 //
-// Created by jacob, jafet, abraham
+// The code was created by Jacob, Jafet, Abraham.
 //
+// The code looks through a file of valid lexemes to see if they
+// fit the grammar of the language.
+//
+// Functions made by Jacob: vdecassign, ifstmt, elsepart, assignstmt, and relop.
+// Functions made by Abraham: stmtlist, stmt, expr, term, and arithop.
+// Functions made by Jafet: whilestmt, inputstmt, outputstmt, simpleexpr, logicop.
 
 #include "SyntaxAnalyzer.h"
-
 #include <iostream>
 
 // Made by Group
