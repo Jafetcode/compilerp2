@@ -359,8 +359,8 @@ bool SyntaxAnalyzer::term() {
                 return false;
             }
         }
-        return false;
     }
+    return false;
 }
 
 // Made by Abraham
